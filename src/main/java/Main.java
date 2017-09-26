@@ -4,7 +4,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class Main {
 
@@ -48,27 +51,27 @@ public class Main {
         }
 
         String filename = "data/" + url.split("/")[4] + ".csv";
-
-        with open (filename, 'w')as fl:
-        wr = csv.writer(fl, dialect = 'excel')
-        wr.writerows(sentiments)
-
-        print(len(sentiments), ' reviews from ', url)
+        PrintWriter pw = new PrintWriter(new File(filename));
+        StringBuilder sb = new StringBuilder();
+        sb.append(sentiments);
+        pw.write(sb.toString() + " reviews from " + url);
+        pw.close();
     }
 
-    public static void parseReviewsPage(String url) {
-        html_doc = urllib.request.urlopen(url)
-        soup = BeautifulSoup(html_doc, 'html.parser')
-        reviews = soup.find_all('article', class_ = 'pp-review-i')
-        sentiments = []
+    public static void parseReviewsPage(String url) throws IOException {
+        Document doc = Jsoup.connect(url).get();
+        Elements reviews = doc.select("article.pp-review-i");
+        String[] sentiments = new String[reviews.size()];
 
-        for review in reviews:
-        star = review.find('span', class_ = 'g-rating-stars-i')
-        text = review.find('div', class_ = 'pp-review-text')
-        if star:
-        texts = text.find_all('div', class_ = 'pp-review-text-i')
-        sentiments.append([star['content'], texts[0].get_text().strip()])
+        for(Element review: reviews) {
+            Elements star = review.select("span.g-rating-stars-i");
+            Elements text = review.select("div.pp-review-text");
+            if(star>0) {
+                Elements texts = text.select("div.pp-review-text-i");
+                sentiments.add((star.select("content"), Integer.parseInt(texts.first().text()));
+            }
+        }
 
-        return sentiments;
+        return sentiments[];
     }
 }
