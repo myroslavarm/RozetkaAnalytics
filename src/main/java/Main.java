@@ -31,7 +31,8 @@ public class Main {
         Elements tiles = doc.select("div.g-i-tile-i-title");
         for(Element tile: tiles) {
             Elements link = tile.select("a");
-            parseReviews(link.select("href") + "comments/");
+            System.out.println(link.attr("href") + "comments/");
+            parseReviews(link.attr("href") + "comments/");
         }
     }
 
