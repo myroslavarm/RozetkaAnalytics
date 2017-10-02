@@ -1,11 +1,13 @@
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Main {
@@ -16,7 +18,7 @@ public class Main {
         //parseReviewsPage("https://rozetka.com.ua/ua/kingston_sdc10g2_32gb/p5846073/comments/page=2/");
     }
 
-    public static void parseCategory(String url) throws IOException {
+    public static void parseCategory(String url) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
         Document doc = Jsoup.connect(url).get();
         Elements el = doc.select("a.paginator-catalog-l-link");
         int num = Integer.parseInt(el.last().text());
@@ -26,7 +28,7 @@ public class Main {
         }
     }
 
-    public static void parseCategoryPage(String url) throws IOException {
+    public static void parseCategoryPage(String url) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
         Document doc = Jsoup.connect(url).get();
         Elements tiles = doc.select("div.g-i-tile-i-title");
         for(Element tile: tiles) {
@@ -36,7 +38,7 @@ public class Main {
         }
     }
 
-    public static void parseReviews(String url) throws IOException {
+    public static void parseReviews(String url) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
         Document doc = Jsoup.connect(url).get();
         int num = 0;
         Elements nums = doc.select("a.paginator-catalog-l-link");
@@ -52,11 +54,10 @@ public class Main {
         }
 
         String filename = "data/" + url.split("/")[4] + ".csv";
-        PrintWriter pw = new PrintWriter(new File(filename));
-        StringBuilder sb = new StringBuilder();
-        sb.append(sentiments);
-        pw.write(sb.toString() + " reviews from " + url);
-        pw.close();
+        Writer writer = new FileWriter(filename);
+        StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
+        beanToCsv.write(sentiments);
+        writer.close();
     }
 
     public static ArrayList<Review> parseReviewsPage(String url) throws IOException {
