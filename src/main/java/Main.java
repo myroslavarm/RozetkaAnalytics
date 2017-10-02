@@ -15,7 +15,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String url = "https://rozetka.com.ua/ua/memory-cards/c80044/";
         parseCategory(url);
-        //parseReviewsPage("https://rozetka.com.ua/ua/kingston_sdc10g2_32gb/p5846073/comments/page=2/");
     }
 
     public static void parseCategory(String url) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
@@ -63,7 +62,6 @@ public class Main {
     public static ArrayList<Review> parseReviewsPage(String url) throws IOException {
         Document doc = Jsoup.connect(url).get();
         Elements reviews = doc.select("article.pp-review-i");
-        //String[] sentiments = new String[reviews.size()];
         ArrayList<Review> sentiments = new ArrayList<>();
 
         for(Element review: reviews) {
@@ -71,11 +69,7 @@ public class Main {
             Elements text = review.select("div.pp-review-text");
 
             if(star.size()>0) {
-                //System.out.println("star " + star.get(0).attr("content"));
-                //System.out.println("text " + text.text());
                 sentiments.add(new Review(text.text(), Integer.parseInt(star.get(0).attr("content"))));
-                //Elements texts = text.select("div.pp-review-text-i");
-                //sentiments.addAll((star.select("content"), Integer.parseInt(texts.first().text()));
             }
         }
         return(sentiments);
